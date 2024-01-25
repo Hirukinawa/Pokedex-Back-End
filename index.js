@@ -10,7 +10,64 @@ app.use(cors());
 app.use(express.json());
 
 let users = [];
-let logos = [];
+let fechamentoCaixa = [
+  {
+    id: 1,
+    evento: "Show",
+    terminal: "POs",
+    abertura: "25-01-2022",
+    fechamento: "26-01-2022",
+    valor: "5489,54",
+    dinheiro: "50",
+    cartao: "5000,84",
+    cortesia: "0",
+    pix: "439",
+    outros: "0",
+    sincronizacao: "Sas",
+  },
+  {
+    id: 2,
+    evento: "Show",
+    terminal: "POs",
+    abertura: "25-01-2022",
+    fechamento: "26-01-2022",
+    valor: "5489,54",
+    dinheiro: "50",
+    cartao: "5000,84",
+    cortesia: "0",
+    pix: "439",
+    outros: "0",
+    sincronizacao: "Sas",
+  },
+  {
+    id: 3,
+    evento: "Show",
+    terminal: "POs",
+    abertura: "25-01-2022",
+    fechamento: "26-01-2022",
+    valor: "5489,54",
+    dinheiro: "50",
+    cartao: "5000,84",
+    cortesia: "0",
+    pix: "439",
+    outros: "0",
+    sincronizacao: "Sas",
+  },
+  {
+    id: 4,
+    evento: "Show",
+    terminal: "POs",
+    abertura: "25-01-2022",
+    fechamento: "26-01-2022",
+    valor: "5489,54",
+    dinheiro: "50",
+    cartao: "5000,84",
+    cortesia: "0",
+    pix: "439",
+    outros: "0",
+    sincronizacao: "Sas",
+  },
+];
 let pkmnsFav = [];
 
 app.route("/users").get((req, res) =>
@@ -83,6 +140,104 @@ app.route("/users/:id").delete((req, res) => {
   users = users.filter((user) => Number(user.id) !== Number(userId));
 
   res.json("Usuário removido!");
+});
+
+//////////////////
+//////////////////
+//////////////////
+//////////////////
+//////////////////
+
+app.route("/fechamento_caixa").get((req, res) => {
+  res.json({
+    fechamentoCaixa,
+  });
+});
+
+app.route("/fechamento_caixa/:id").get((req, res) => {
+  const caixaId = req.params.id;
+
+  const user = fechamentoCaixa.find(
+    (user) => Number(user.id) === Number(caixaId)
+  );
+
+  if (!user) {
+    return res.json("Fechamento não encontrado");
+  }
+
+  res.json(user);
+});
+
+app.route("/fechamento_caixa").post((req, res) => {
+  let lastId = 0;
+
+  if (fechamentoCaixa.length > 0) {
+    lastId = fechamentoCaixa[fechamentoCaixa.length - 1].id;
+  }
+
+  fechamentoCaixa.push({
+    id: lastId + 1,
+    evento: req.body.evento,
+    terminal: req.body.terminal,
+    abertura: req.body.abertura,
+    fechamento: req.body.fechamento,
+    valor: req.body.valor,
+    dinheiro: req.body.dinheiro,
+    cartao: req.body.cartao,
+    cortesia: req.body.cortesia,
+    pix: req.body.pix,
+    outros: req.body.outros,
+    sincronizacao: req.body.sincronizacao,
+  });
+
+  res.json("Fechamento adicionado");
+});
+
+app.route("/fechamento_caixa/:id").put((req, res) => {
+  const caixaId = req.params.id;
+
+  const caixa = fechamentoCaixa.find(
+    (caixa) => Number(caixa.id) === Number(caixaId)
+  );
+
+  if (!caixa) {
+    res.json("Fechamento não encontrado!");
+  }
+
+  const updatedCaixa = {
+    ...caixa,
+    id: req.body.id,
+    evento: req.body.evento,
+    terminal: req.body.terminal,
+    abertura: req.body.abertura,
+    fechamento: req.body.fechamento,
+    valor: req.body.valor,
+    dinheiro: req.body.dinheiro,
+    cartao: req.body.cartao,
+    cortesia: req.body.cortesia,
+    pix: req.body.pix,
+    outros: req.body.outros,
+    sincronizacao: req.body.sincronizacao,
+  };
+
+  fechamentoCaixa = fechamentoCaixa.map((caixa) => {
+    if (Number(caixa.id) === Number(caixaId)) {
+      caixa = updatedCaixa;
+    }
+    return caixa;
+  });
+
+  res.json("Fechamento atualizado");
+});
+
+app.route("/fechamento_caixa/:id").delete((req, res) => {
+  const caixaId = req.params.id;
+
+  fechamentoCaixa = fechamentoCaixa.filter(
+    (caixa) => Number(caixa.id) !== Number(caixaId)
+  );
+
+  res.json("Fechamento excluído");
 });
 
 //////////////////
