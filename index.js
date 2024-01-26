@@ -10,64 +10,8 @@ app.use(cors());
 app.use(express.json());
 
 let users = [];
-let fechamentoCaixa = [
-  {
-    id: 1,
-    evento: "Show",
-    terminal: "POs",
-    abertura: "25-01-2022",
-    fechamento: "26-01-2022",
-    valor: "5489,54",
-    dinheiro: "50",
-    cartao: "5000,84",
-    cortesia: "0",
-    pix: "439",
-    outros: "0",
-    sincronizacao: "Sas",
-  },
-  {
-    id: 2,
-    evento: "Show",
-    terminal: "POs",
-    abertura: "25-01-2022",
-    fechamento: "26-01-2022",
-    valor: "5489,54",
-    dinheiro: "50",
-    cartao: "5000,84",
-    cortesia: "0",
-    pix: "439",
-    outros: "0",
-    sincronizacao: "Sas",
-  },
-  {
-    id: 3,
-    evento: "Show",
-    terminal: "POs",
-    abertura: "25-01-2022",
-    fechamento: "26-01-2022",
-    valor: "5489,54",
-    dinheiro: "50",
-    cartao: "5000,84",
-    cortesia: "0",
-    pix: "439",
-    outros: "0",
-    sincronizacao: "Sas",
-  },
-  {
-    id: 4,
-    evento: "Show",
-    terminal: "POs",
-    abertura: "25-01-2022",
-    fechamento: "26-01-2022",
-    valor: "5489,54",
-    dinheiro: "50",
-    cartao: "5000,84",
-    cortesia: "0",
-    pix: "439",
-    outros: "0",
-    sincronizacao: "Sas",
-  },
-];
+let fechamentoCaixa = [];
+let cardapios = [];
 let pkmnsFav = [];
 
 app.route("/users").get((req, res) =>
@@ -140,6 +84,94 @@ app.route("/users/:id").delete((req, res) => {
   users = users.filter((user) => Number(user.id) !== Number(userId));
 
   res.json("Usuário removido!");
+});
+
+//////////////////
+//////////////////
+//////////////////
+//////////////////
+//////////////////
+
+app.route("/cardapios").get((req, res) => {
+  res.json({
+    cardapios,
+  });
+});
+
+app.route("/cardapios/:id").get((req, res) => {
+  const cardapiosId = req.params.id;
+
+  const cardapio = cardapios.find(
+    (cardapio) => Number(cardapio.id) === Number(cardapiosId)
+  );
+
+  if (!cardapio) {
+    res.json("Cardápio não encontrado");
+  }
+
+  res.json(cardapio);
+});
+
+app.route("/cardapios").post((req, res) => {
+  let lastId = 0;
+
+  if (cardapios.length > 0) {
+    lastId = cardapios[cardapios.length - 1].id;
+  }
+
+  cardapios.push({
+    id: lastId + 1,
+    nome: req.body.nome,
+    situacao: req.body.situacao,
+  });
+
+  res.json("Cardápio adicionado com sucesso");
+});
+
+app.route("/cardapios/:id").put((req, res) => {
+  const cardapioId = req.params.id;
+
+  const cardapio = cardapios.find(
+    (cardapio) => Number(cardapioId) === Number(cardapio.id)
+  );
+
+  if (!cardapio) {
+    res.json("Cardápio não encontrado");
+  }
+
+  const updatedCardapio = {
+    ...cardapio,
+    id: cardapioId,
+    nome: req.body.nome,
+    situacao: req.body.situacao,
+  };
+
+  cardapios = cardapios.map((cardapio) => {
+    if (Number(cardapio.id) === Number(cardapioId)) {
+      cardapio = updatedCardapio;
+    }
+    return cardapio;
+  });
+
+  res.json("Cardápio atualizado!");
+});
+
+app.route("/cardapios/:id").delete((req, res) => {
+  const cardapioId = req.params.id;
+
+  const cardapio = cardapios.find(
+    (cardapio) => Number(cardapioId) === Number(cardapio.id)
+  );
+
+  if (!cardapio) {
+    res.json("Cardápio não encontrado!");
+  }
+
+  cardapios = cardapios.filter((cardapio) => {
+    Number(cardapioId) !== Number(cardapio.id);
+  });
+
+  res.json("Cardápio excluído com sucesso!");
 });
 
 //////////////////
@@ -315,6 +347,14 @@ app.route("/api/:id").put((req, res) => {
 
 app.route("/api/:id").delete((req, res) => {
   const userId = req.params.id;
+
+  const pokemon = pkmnsFav.find(
+    (pokemon) => Number(userId) === Number(pokemon.id)
+  );
+
+  if (!pokemon) {
+    res.json("Pokémon não encontrado!");
+  }
 
   pkmnsFav = pkmnsFav.filter((user) => Number(user.id) !== Number(userId));
 
